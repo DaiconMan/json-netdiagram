@@ -7,7 +7,7 @@
     { "id": "英数字の一意なID", "label": "表示名（改行は \n）", "layer": 行番号, "col": 列番号, "type": "種類" }
   ],
   "edges": [
-    { "from": "ID", "to": "ID", "label": "回線種別など（省略可）", "style": "solid", "arrow": false, "label_pos": 0.5 }
+    { "from": "ID", "to": "ID", "label": "回線種別など（省略可）", "style": "solid", "arrow": false, "label_pos": 0.5, "route": "straight" }
   ],
   "groups": [
     { "id": "英数字ID", "label": "グループ名", "nodes": ["ID", "ID"], "padding": 20 }
@@ -24,9 +24,13 @@
 - 線は隣接する layer の間を基本とし、途中のノードの真上を通る結び方を避ける（必要なら col をずらす）
 - group に入れるノードは col が連続する範囲にまとめ、グループ外のノードをその範囲の中に置かない
 - 別グループ同士は col を1つ以上空ける
-- 線ラベルがグループの枠をまたぐ線は "label_pos": 0.25 などで枠の外側に寄せる
+- 線ラベルがグループの枠をまたぐ線は "label_pos": 0.25 などで枠の外側に寄せる。それでもかかるなら canvas.row_gap を増やす
 - JSONにコメントや末尾カンマを入れない
 - edges の style は solid か dashed（無線・論理接続は dashed）
+- edges の route は straight（直線）か bus（くし形）。1台から3台以上へ分かれる線は、すべて "route": "bus" にする
+- bus の子は親より下の layer に置く。子が10台を超えるときは layer を分けて複数の段にする
+- bus を使う親の col は、親と最も下の子の間の layer では空けておく（幹線が親の真下を通るため）
+- VLAN などで子を分けたいときは、VLAN ごとに layer（段）を分け、段ごとに group で囲む（group の label に VLAN 名）
 
 【構成】
 （ここに構成を書く。箇条書きでOK。例）

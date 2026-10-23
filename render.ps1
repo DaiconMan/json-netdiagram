@@ -10,8 +10,10 @@ render.ps1 — JSON → 構成図PNG（検証つき）  Windows PowerShell 5.1 /
 -FromClipboard でNGのときは、生成AIにそのまま貼れる修正依頼文をクリップボードに入れます。
 
 検証: JSON構文 / 必須キー / id重複 / 参照切れ / ノード重なり / 文字はみ出し / 線のノード貫通 /
-      線ラベル・タイトル・グループ名の重なり / 線ラベルのグループ枠線かぶり / グループへの非メンバー混入 /
-      キャンバス外 / フォント未収録文字（豆腐）
+      線ラベル・タイトル・グループ名の重なり / 線ラベルのグループ枠線かぶり / グループ名にかかる線 /
+      グループへの非メンバー混入 / グループ枠同士の重なり / キャンバス外 / フォント未収録文字（豆腐）
+線: route "straight"（直線、既定）/ "bus"（くし形。親の真下→子の行の上の幹線→子）
+グループ名: 枠の上辺に置き、線が横切るときは自動で下辺に置く
 #>
 [CmdletBinding()]
 param(
@@ -214,10 +216,12 @@ if ($grid) {
     $x = ($W - $autoW) / 2
     foreach ($c in ($colW.Keys | Sort-Object)) { $colX[$c] = $x + $colW[$c] / 2; $x += $colW[$c] + $colGap }
 }
+$rowTop = @{}; $rowH = @{}
 foreach ($li in ($layers.Keys | Sort-Object)) {
     $ids = $layers[$li]
     $mh = 0.0; foreach ($i in $ids) { if ($nodes[$i].h -gt $mh) { $mh = $nodes[$i].h } }
     $cy = $top + $li * $rowGap + $mh / 2
+    $rowTop[$li] = $top + $li * $rowGap; $rowH[$li] = $mh
     if ($grid) {
         foreach ($i in $ids) { $nodes[$i].cx = $colX[[int]$nodes[$i].col]; $nodes[$i].cy = $cy }
     } else {
@@ -238,6 +242,55 @@ foreach ($nid in $order) {
     if ($nd.fixed -and -not $hasHeight -and $nd.rect[3] + $margin -gt $H) { $H = [int]($nd.rect[3] + $margin) }
 }
 
+# 線の経路（折れ点の配列）。不正なら文字列でエラー内容を返す
+$shiftY = 0.0
+function Get-EdgePts($e) {
+    $a = [string]$e.from; $b = [string]$e.to
+    $na = $script:nodes[$a]; $nb = $script:nodes[$b]
+    $route = [string](Get-Prop $e 'route' 'straight')
+    if ($route -eq 'bus') {
+        # くし形: 親の下辺中央 → 子の行のすぐ上の幹線 → 子の上辺中央
+        if ($nb.rect[1] -le $na.rect[3]) { return "線 ${a}→${b}: route `"bus`" は from より下の行にある to にだけ使える" }
+        $busY = ($na.rect[3] + $nb.rect[1]) / 2
+        if (-not $nb.fixed -and -not $na.fixed) {
+            $L = [int]$nb.layer
+            $prev = $null; foreach ($k2 in $script:rowTop.Keys) { if ($k2 -lt $L -and ($null -eq $prev -or $k2 -gt $prev)) { $prev = $k2 } }
+            if ($null -ne $prev -and $prev -ge [int]$na.layer) { $busY = ($script:rowTop[$prev] + $script:rowH[$prev] + $script:rowTop[$L]) / 2 + $script:shiftY }
+        }
+        return , (@(, @($na.cx, $na.rect[3])) + @(, @($na.cx, $busY)) + @(, @($nb.cx, $busY)) + @(, @($nb.cx, $nb.rect[1])))
+    }
+    if ($route -eq 'straight') {
+        return , (@(, (Get-Clip $na.cx $na.cy ($na.w / 2) ($na.h / 2) $nb.cx $nb.cy)) + @(, (Get-Clip $nb.cx $nb.cy ($nb.w / 2) ($nb.h / 2) $na.cx $na.cy)))
+    }
+    return "線 ${a}→${b}: route は straight か bus"
+}
+function Test-PathHit($pts, $r) {
+    for ($sg = 0; $sg -lt $pts.Count - 1; $sg++) {
+        $s0 = $pts[$sg]; $s1 = $pts[$sg + 1]
+        for ($s = 0; $s -le 40; $s++) {
+            $px = $s0[0] + ($s1[0] - $s0[0]) * $s / 40; $py = $s0[1] + ($s1[1] - $s0[1]) * $s / 40
+            if ($px -ge $r[0] -and $px -le $r[2] -and $py -ge $r[1] -and $py -le $r[3]) { return $true }
+        }
+    }
+    return $false
+}
+function Get-ValidEdgePaths {
+    foreach ($e in $script:specEdges) {
+        $a = [string]$e.from; $b = [string]$e.to
+        if (-not $script:nodes.ContainsKey($a) -or -not $script:nodes.ContainsKey($b) -or $a -eq $b) { continue }
+        if (Test-Overlap $script:nodes[$a].rect $script:nodes[$b].rect 0) { continue }
+        $pts = Get-EdgePts $e
+        if ($pts -isnot [string]) { , $pts }
+    }
+}
+
+# グループ名は枠の上辺に置く。線が横切る場合は下辺に置く
+$groupSide = @{}
+function Get-GroupLabelRect($fr, $side, $tw, $th) {
+    if ($side -eq 'bottom') { return , @(($fr[0] + 8), ($fr[3] - 3 - $th), ($fr[0] + 8 + $tw), ($fr[3] - 3)) }
+    return , @(($fr[0] + 8), ($fr[1] + 3), ($fr[0] + 8 + $tw), ($fr[1] + 3 + $th))
+}
+
 # グループ枠（存在するメンバーのみで計算。メンバー不正の検証は後段）
 function Get-GroupFrame($g) {
     $members = @($g.nodes | ForEach-Object { [string]$_ } | Where-Object { $script:nodes.ContainsKey($_) })
@@ -250,8 +303,23 @@ function Get-GroupFrame($g) {
     }
     $x0 -= $pad; $y0 -= $pad; $x1 += $pad; $y1 += $pad
     $lab = Get-Label $g
-    if ($lab) { $y0 -= (Measure-Text $lab $script:nodeFont)[1] + 6 }
+    if ($lab) {
+        $th = (Measure-Text $lab $script:nodeFont)[1] + 6
+        if ($script:groupSide[[string]$g.id] -eq 'bottom') { $y1 += $th } else { $y0 -= $th }
+    }
     return , @($x0, $y0, $x1, $y1)
+}
+
+$paths0 = @(Get-ValidEdgePaths)
+foreach ($g in $specGroups) {
+    $lab = Get-Label $g
+    if (-not $lab -or -not (Has $g 'id')) { continue }
+    $gid = [string]$g.id; $groupSide[$gid] = 'top'
+    $fr = Get-GroupFrame $g
+    if ($null -eq $fr) { continue }
+    $tsz = Measure-Text $lab $nodeFont
+    $lr = Get-GroupLabelRect $fr 'top' $tsz[0] $tsz[1]
+    if (@($paths0 | Where-Object { Test-PathHit $_ $lr }).Count -gt 0) { $groupSide[$gid] = 'bottom' }
 }
 
 # 自動サイズのときは、グループ枠まで含めて余白 margin で収まるよう全体を平行移動・拡張する
@@ -298,14 +366,25 @@ foreach ($e in $specEdges) {
     if ($a -eq $b) { Add-Err "線 ${a}→${b} が自己参照" "node:$a"; continue }
     $na = $nodes[$a]; $nb = $nodes[$b]
     if (Test-Overlap $na.rect $nb.rect 0) { continue }
-    $p = Get-Clip $na.cx $na.cy ($na.w / 2) ($na.h / 2) $nb.cx $nb.cy
-    $q = Get-Clip $nb.cx $nb.cy ($nb.w / 2) ($nb.h / 2) $na.cx $na.cy
+    $route = [string](Get-Prop $e 'route' 'straight')
+    $pts = Get-EdgePts $e
+    if ($pts -is [string]) { Add-Err $pts "node:$b"; continue }
+    # ラベルは最後の区間（bus なら子へ下りる縦線）に置く
+    $p = $pts[$pts.Count - 2]; $q = $pts[$pts.Count - 1]
     foreach ($o in $order) {
         if ($o -eq $a -or $o -eq $b) { continue }
         $orc = $nodes[$o].rect
-        for ($s = 0; $s -le 40; $s++) {
-            $px = $p[0] + ($q[0] - $p[0]) * $s / 40; $py = $p[1] + ($q[1] - $p[1]) * $s / 40
-            if ($px -ge $orc[0] -and $px -le $orc[2] -and $py -ge $orc[1] -and $py -le $orc[3]) { Add-Err "線 ${a}→${b} がノード ${o} を貫通している" "node:$o"; break }
+        $hit = $false
+        for ($sg = 0; $sg -lt $pts.Count - 1 -and -not $hit; $sg++) {
+            $s0 = $pts[$sg]; $s1 = $pts[$sg + 1]
+            for ($s = 0; $s -le 40; $s++) {
+                $px = $s0[0] + ($s1[0] - $s0[0]) * $s / 40; $py = $s0[1] + ($s1[1] - $s0[1]) * $s / 40
+                if ($px -ge $orc[0] -and $px -le $orc[2] -and $py -ge $orc[1] -and $py -le $orc[3]) { $hit = $true; break }
+            }
+        }
+        if ($hit) {
+            $hint = if ($route -eq 'bus') { "（bus の幹線が通る列 col $($na.col) を途中の行で空ける）" } else { '' }
+            Add-Err "線 ${a}→${b} がノード ${o} を貫通している$hint" "node:$o"
         }
     }
     $lab = Get-Label $e
@@ -322,7 +401,7 @@ foreach ($e in $specEdges) {
         foreach ($L in $labelRects) { if (Test-Overlap $L.rect $lr 0) { Add-Err "線ラベル「${lab}」(${a}→${b}) が「$($L.text)」と重なっている" $key } }
         $labelRects.Add(@{ key = $key; rect = $lr; text = $lab })
     }
-    $edges.Add(@{ p = $p; q = $q; dashed = ([string](Get-Prop $e 'style' 'solid') -eq 'dashed'); arrow = [bool](Get-Prop $e 'arrow' $false); label = $lab; lr = $lr })
+    $edges.Add(@{ pts = $pts; dashed = ([string](Get-Prop $e 'style' 'solid') -eq 'dashed'); arrow = [bool](Get-Prop $e 'arrow' $false); label = $lab; lr = $lr })
 }
 
 $groups = New-Object System.Collections.Generic.List[object]
@@ -342,15 +421,16 @@ foreach ($g in $specGroups) {
     foreach ($o in $order) { if ($members -notcontains $o -and (Test-Overlap $nodes[$o].rect $gr 0)) { Add-Err "グループ ${gid} の枠に非メンバー ${o} が入っている" "node:$o" } }
     $lr = $null
     if ($lab) {
-        $lr = @(($x0 + 8), ($y0 + 3), ($x0 + 8 + $tw), ($y0 + 3 + $th))
+        $lr = Get-GroupLabelRect $gr $groupSide[$gid] $tw $th
         foreach ($L in $labelRects) { if (Test-Overlap $L.rect $lr 0) { Add-Err "グループ名「${lab}」が「$($L.text)」と重なっている" "group:$gid" } }
+        if (@($edges | Where-Object { Test-PathHit $_.pts $lr }).Count -gt 0) { Add-Err "グループ名「${lab}」に線がかかっている（枠の上辺・下辺とも線が横切る。メンバーの col をずらすか、グループ名を短くする）" "group:$gid" }
     }
     $m4 = 4
     foreach ($L in $labelRects) {
         if (-not $L.key.StartsWith('edge:')) { continue }
         $r2 = $L.rect
         $inside = $r2[0] -gt $x0 + $m4 -and $r2[1] -gt $y0 + $m4 -and $r2[2] -lt $x1 - $m4 -and $r2[3] -lt $y1 - $m4
-        if ((Test-Overlap $r2 $gr $m4) -and -not $inside) { Add-Err "線ラベル「$($L.text)」がグループ ${gid} の枠線にかかっている（label_pos を 0.25 や 0.75 にずらす）" $L.key }
+        if ((Test-Overlap $r2 $gr $m4) -and -not $inside) { Add-Err "線ラベル「$($L.text)」がグループ ${gid} の枠線にかかっている（label_pos を 0.25 や 0.75 にずらす。それでもかかるなら canvas.row_gap を 40 増やす）" $L.key }
     }
     if ($lab) { $labelRects.Add(@{ key = "group:$gid"; rect = $lr; text = $lab }) }
     $groups.Add(@{ id = $gid; rect = $gr; label = $lab; lr = $lr })
@@ -401,7 +481,8 @@ foreach ($e in $edges) {
     $pen = New-Object System.Drawing.Pen((C '#444444'), 2)
     if ($e.dashed) { $pen.DashStyle = [System.Drawing.Drawing2D.DashStyle]::Dash }
     if ($e.arrow) { $pen.CustomEndCap = New-Object System.Drawing.Drawing2D.AdjustableArrowCap(5, 5) }
-    $gfx.DrawLine($pen, [single]$e.p[0], [single]$e.p[1], [single]$e.q[0], [single]$e.q[1])
+    $pf = [System.Drawing.PointF[]]@($e.pts | ForEach-Object { New-Object System.Drawing.PointF([single]$_[0], [single]$_[1]) })
+    $gfx.DrawLines($pen, $pf)
 }
 foreach ($nid in $order) {
     $nd = $nodes[$nid]
