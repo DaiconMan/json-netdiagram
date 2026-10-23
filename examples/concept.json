@@ -1,0 +1,105 @@
+{
+  "canvas": {
+    "title": "構成図の作成を生成AIに置き換える",
+    "direction": "LR",
+    "font_size": 14,
+    "row_gap": 150,
+    "layer_gap": 120,
+    "col_gap": 48,
+    "uniform_width": false
+  },
+  "nodes": [
+    {
+      "id": "cur_a",
+      "label": "構成図を手作業で作成",
+      "layer": 0,
+      "col": 0,
+      "type": "box"
+    },
+    {
+      "id": "cur_b",
+      "label": "作成に時間がかかる\n表記がばらばら\n更新漏れ",
+      "layer": 1,
+      "col": 0,
+      "type": "box"
+    },
+    {
+      "id": "pro_a",
+      "label": "生成AIがJSONを作成",
+      "layer": 3,
+      "col": 0,
+      "type": "box"
+    },
+    {
+      "id": "pro_b",
+      "label": "render.ps1 が検証して描画",
+      "layer": 4,
+      "col": 0,
+      "type": "box"
+    },
+    {
+      "id": "pro_c",
+      "label": "作成時間を短縮\n表記を統一\n検証で崩れを防止",
+      "layer": 5,
+      "col": 0,
+      "type": "emphasis"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cur_a",
+      "to": "cur_b",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight",
+      "label_pos": 0.5
+    },
+    {
+      "from": "cur_b",
+      "to": "pro_a",
+      "label": "JSONで置き換え",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight",
+      "label_pos": 0.5
+    },
+    {
+      "from": "pro_a",
+      "to": "pro_b",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight",
+      "label_pos": 0.5
+    },
+    {
+      "from": "pro_b",
+      "to": "pro_c",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight",
+      "label_pos": 0.5
+    }
+  ],
+  "groups": [
+    {
+      "id": "current",
+      "label": "現状",
+      "nodes": [
+        "cur_a",
+        "cur_b"
+      ],
+      "padding": 20
+    },
+    {
+      "id": "proposal",
+      "label": "提案",
+      "nodes": [
+        "pro_a",
+        "pro_b",
+        "pro_c"
+      ],
+      "padding": 20
+    }
+  ],
+  "lanes": []
+}

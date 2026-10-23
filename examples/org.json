@@ -1,0 +1,264 @@
+{
+  "canvas": {
+    "title": "組織図",
+    "direction": "TB",
+    "font_size": 14,
+    "row_gap": 150,
+    "layer_gap": 80,
+    "col_gap": 48,
+    "uniform_width": true
+  },
+  "nodes": [
+    {
+      "id": "ceo",
+      "label": "代表取締役\n山田",
+      "layer": 0,
+      "col": 4,
+      "type": "person"
+    },
+    {
+      "id": "mgr_admin",
+      "label": "管理本部長\n佐藤",
+      "layer": 1,
+      "col": 1,
+      "type": "person"
+    },
+    {
+      "id": "mgr_dev",
+      "label": "開発本部長\n鈴木",
+      "layer": 1,
+      "col": 7,
+      "type": "person"
+    },
+    {
+      "id": "d_somu",
+      "label": "総務課",
+      "layer": 2,
+      "col": 0,
+      "type": "dept"
+    },
+    {
+      "id": "d_keiri",
+      "label": "経理課",
+      "layer": 2,
+      "col": 2,
+      "type": "dept"
+    },
+    {
+      "id": "d_infra",
+      "label": "インフラ課",
+      "layer": 2,
+      "col": 5,
+      "type": "dept"
+    },
+    {
+      "id": "d_app",
+      "label": "アプリ課",
+      "layer": 2,
+      "col": 9,
+      "type": "dept"
+    },
+    {
+      "id": "lead_infra",
+      "label": "課長\n高橋",
+      "layer": 3,
+      "col": 5,
+      "type": "person"
+    },
+    {
+      "id": "lead_app",
+      "label": "課長\n田中",
+      "layer": 3,
+      "col": 9,
+      "type": "person"
+    },
+    {
+      "id": "inf1",
+      "label": "メンバー\n1",
+      "layer": 4,
+      "col": 4,
+      "type": "person"
+    },
+    {
+      "id": "inf2",
+      "label": "メンバー\n2",
+      "layer": 4,
+      "col": 5,
+      "type": "person"
+    },
+    {
+      "id": "inf3",
+      "label": "メンバー\n3",
+      "layer": 4,
+      "col": 6,
+      "type": "person"
+    },
+    {
+      "id": "app1",
+      "label": "メンバー\n1",
+      "layer": 4,
+      "col": 8,
+      "type": "person"
+    },
+    {
+      "id": "app2",
+      "label": "メンバー\n2",
+      "layer": 4,
+      "col": 9,
+      "type": "person"
+    },
+    {
+      "id": "app3",
+      "label": "メンバー\n3",
+      "layer": 4,
+      "col": 10,
+      "type": "person"
+    },
+    {
+      "id": "app4",
+      "label": "メンバー\n4",
+      "layer": 4,
+      "col": 11,
+      "type": "person"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ceo",
+      "to": "mgr_admin",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "ceo",
+      "to": "mgr_dev",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "mgr_admin",
+      "to": "d_somu",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "mgr_admin",
+      "to": "d_keiri",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "mgr_dev",
+      "to": "d_infra",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "mgr_dev",
+      "to": "d_app",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "d_infra",
+      "to": "lead_infra",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "d_app",
+      "to": "lead_app",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_infra",
+      "to": "inf1",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_infra",
+      "to": "inf2",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_infra",
+      "to": "inf3",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_app",
+      "to": "app1",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_app",
+      "to": "app2",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_app",
+      "to": "app3",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "lead_app",
+      "to": "app4",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_admin",
+      "label": "管理本部",
+      "nodes": [
+        "mgr_admin",
+        "d_somu",
+        "d_keiri"
+      ],
+      "padding": 20
+    },
+    {
+      "id": "g_dev",
+      "label": "開発本部",
+      "nodes": [
+        "mgr_dev",
+        "d_infra",
+        "d_app",
+        "lead_infra",
+        "lead_app",
+        "inf1",
+        "inf2",
+        "inf3",
+        "app1",
+        "app2",
+        "app3",
+        "app4"
+      ],
+      "padding": 20
+    }
+  ],
+  "lanes": []
+}

@@ -8,6 +8,54 @@
 - Windows 標準の機能だけで動きます（Windows PowerShell 5.1 / PowerShell 7、追加インストール不要）
 - 座標は生成AIに決めさせません。`layer`（段）と `col`（列）だけを決めさせ、配置・サイズ・線ラベルの位置はスクリプト側で計算します
 
+## 作れる図の例
+
+下の図は、`prompts/` の依頼文を生成AIに貼って返ってきた JSON（一部はテスト用に作成）を、そのまま `render.ps1` で描いたものです。元の JSON は [`examples/`](examples/) にあります。
+
+### ネットワーク構成図（[prompts/network.txt](prompts/network.txt)）
+
+FW・コア・フロアの階層、DMZ と社内 LAN のグループ、無線の点線、回線種別のラベル。
+
+![ネットワーク構成図](examples/network.png)
+
+1 台のスイッチから多数の機器へは、くし形の線（`"route": "bus"`）で引きます。VLAN ごとに段を分けてグループで囲めます。
+
+![AP 20 台を VLAN で分けた図](examples/network-vlan-ap.png)
+
+PC の中の仮想環境（WSL2、Hyper-V の仮想スイッチと VM）も、グループの入れ子で表せます。
+
+![WSL2 と Hyper-V の検証環境](examples/network-wsl2-hyperv.png)
+
+### 組織図（[prompts/org.txt](prompts/org.txt)）
+
+箱の幅をそろえ（`uniform_width`）、くし形の線で上司と部下をつなぎます。本部ごとにグループで囲めます。
+
+![組織図](examples/org.png)
+
+### 業務フロー（[prompts/flow.txt](prompts/flow.txt)）
+
+担当者ごとのスイムレーン（`lanes`）、開始・終了、判断のひし形、システムへの入力（平行四辺形）、差し戻しの戻り線（`"route": "loop"`）。
+
+![業務フロー](examples/flow.png)
+
+### 手順書（[prompts/procedure.txt](prompts/procedure.txt)）
+
+番号付きの手順、確認の分岐、注意事項の付箋。
+
+![手順書](examples/procedure.png)
+
+### システム構成図（[prompts/architecture.txt](prompts/architecture.txt)）
+
+左から右（`"direction": "LR"`）に、利用者 → CDN・ロードバランサ → アプリ → データ。DB は円柱、キューは専用の形、外部サービスは破線。VPC と層をグループで囲みます。
+
+![システム構成図](examples/architecture.png)
+
+### 提案資料・説明資料の図（[prompts/concept.txt](prompts/concept.txt)）
+
+現状と提案をグループで並べ、要点を強調色で示します。
+
+![提案資料の図](examples/concept.png)
+
 ## ファイル
 
 | ファイル | 内容 |
@@ -19,6 +67,7 @@
 | `prompts/procedure.txt` | 手順書 |
 | `prompts/architecture.txt` | システム構成図（ソフトウェア・クラウド） |
 | `prompts/concept.txt` | 提案資料・説明資料の概念図 |
+| `examples/` | 上の作例の JSON と PNG |
 
 `prompts/` の各ファイルは、生成AIに貼る依頼文です。スキーマとルールを全部含んでいるので、1 枚貼るだけで使えます。
 

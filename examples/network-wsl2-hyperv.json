@@ -1,0 +1,156 @@
+{
+  "canvas": {
+    "title": "検証環境（WSL2 / Hyper-V）",
+    "font_size": 14,
+    "row_gap": 170,
+    "col_gap": 50
+  },
+  "nodes": [
+    {
+      "id": "inet",
+      "label": "Internet",
+      "layer": 0,
+      "col": 2,
+      "type": "cloud"
+    },
+    {
+      "id": "l3sw",
+      "label": "L3スイッチ\nVLAN10/20/30",
+      "layer": 1,
+      "col": 2,
+      "type": "switch"
+    },
+    {
+      "id": "win11",
+      "label": "Windows 11\n（ホストOS）",
+      "layer": 2,
+      "col": 0,
+      "type": "user"
+    },
+    {
+      "id": "wslsw",
+      "label": "WSL2 仮想SW\n（NAT）",
+      "layer": 3,
+      "col": 0,
+      "type": "switch"
+    },
+    {
+      "id": "ubuntu",
+      "label": "Ubuntu\n（WSL2）",
+      "layer": 4,
+      "col": 0,
+      "type": "server"
+    },
+    {
+      "id": "win10",
+      "label": "Windows 10\n（Hyper-V ホスト）",
+      "layer": 2,
+      "col": 4,
+      "type": "server"
+    },
+    {
+      "id": "vsw",
+      "label": "Hyper-V 仮想SW\n（外部・VLAN対応）",
+      "layer": 3,
+      "col": 4,
+      "type": "switch"
+    },
+    {
+      "id": "dns",
+      "label": "DNSサーバ VM\nVLAN20",
+      "layer": 4,
+      "col": 3,
+      "type": "server"
+    },
+    {
+      "id": "web",
+      "label": "Webサーバ VM\nVLAN30",
+      "layer": 4,
+      "col": 5,
+      "type": "server"
+    }
+  ],
+  "edges": [
+    {
+      "from": "inet",
+      "to": "l3sw",
+      "style": "solid",
+      "arrow": false
+    },
+    {
+      "from": "l3sw",
+      "to": "win11",
+      "label": "Access VLAN10",
+      "style": "solid",
+      "arrow": false,
+      "label_pos": 0.25
+    },
+    {
+      "from": "win11",
+      "to": "wslsw",
+      "style": "dashed",
+      "arrow": false
+    },
+    {
+      "from": "wslsw",
+      "to": "ubuntu",
+      "label": "172.x NAT",
+      "style": "dashed",
+      "arrow": false,
+      "label_pos": 0.5
+    },
+    {
+      "from": "l3sw",
+      "to": "win10",
+      "label": "Trunk 20,30",
+      "style": "solid",
+      "arrow": false,
+      "label_pos": 0.25
+    },
+    {
+      "from": "win10",
+      "to": "vsw",
+      "style": "dashed",
+      "arrow": false
+    },
+    {
+      "from": "vsw",
+      "to": "dns",
+      "label": "VLAN20",
+      "style": "dashed",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "vsw",
+      "to": "web",
+      "label": "VLAN30",
+      "style": "dashed",
+      "arrow": false,
+      "route": "bus"
+    }
+  ],
+  "groups": [
+    {
+      "id": "pc1",
+      "label": "PC1：Windows 11（WSL2）",
+      "nodes": [
+        "win11",
+        "wslsw",
+        "ubuntu"
+      ],
+      "padding": 20
+    },
+    {
+      "id": "pc2",
+      "label": "PC2：Windows 10（Hyper-V）",
+      "nodes": [
+        "win10",
+        "vsw",
+        "dns",
+        "web"
+      ],
+      "padding": 20
+    }
+  ]
+}

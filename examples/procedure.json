@@ -1,0 +1,166 @@
+{
+  "canvas": {
+    "title": "Windows サーバのパッチ適用手順",
+    "direction": "TB",
+    "font_size": 14,
+    "row_gap": 150,
+    "layer_gap": 80,
+    "col_gap": 48,
+    "uniform_width": true
+  },
+  "nodes": [
+    {
+      "id": "start",
+      "label": "開始",
+      "layer": 0,
+      "col": 1,
+      "type": "start"
+    },
+    {
+      "id": "s1",
+      "label": "1. 事前にバックアップを\n取得する",
+      "layer": 1,
+      "col": 1,
+      "type": "step"
+    },
+    {
+      "id": "n1",
+      "label": "注意: 取得完了を\nログで確認する",
+      "layer": 1,
+      "col": 2,
+      "type": "note"
+    },
+    {
+      "id": "s2",
+      "label": "2. メンテナンス通知を\n送る",
+      "layer": 2,
+      "col": 1,
+      "type": "step"
+    },
+    {
+      "id": "s3",
+      "label": "3. Windows Update を\n実行する",
+      "layer": 3,
+      "col": 1,
+      "type": "step"
+    },
+    {
+      "id": "s4",
+      "label": "4. 再起動する",
+      "layer": 4,
+      "col": 1,
+      "type": "step"
+    },
+    {
+      "id": "d5",
+      "label": "5. サービスが\n起動したか？",
+      "layer": 5,
+      "col": 1,
+      "type": "decision"
+    },
+    {
+      "id": "s5a",
+      "label": "5-1. イベントログを確認し\nベンダーに連絡する",
+      "layer": 6,
+      "col": 0,
+      "type": "step"
+    },
+    {
+      "id": "s6",
+      "label": "6. 動作確認して\n完了報告をする",
+      "layer": 6,
+      "col": 1,
+      "type": "step"
+    },
+    {
+      "id": "endErr",
+      "label": "終了",
+      "layer": 7,
+      "col": 0,
+      "type": "end"
+    },
+    {
+      "id": "end",
+      "label": "終了",
+      "layer": 7,
+      "col": 1,
+      "type": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "s1",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "s1",
+      "to": "n1",
+      "style": "dotted",
+      "arrow": false,
+      "route": "straight"
+    },
+    {
+      "from": "s1",
+      "to": "s2",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "s2",
+      "to": "s3",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "s3",
+      "to": "s4",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "s4",
+      "to": "d5",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "d5",
+      "to": "s6",
+      "label": "起動した",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "d5",
+      "to": "s5a",
+      "label": "起動しない",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "s5a",
+      "to": "endErr",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "s6",
+      "to": "end",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    }
+  ],
+  "groups": [],
+  "lanes": []
+}

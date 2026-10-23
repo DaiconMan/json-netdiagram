@@ -1,0 +1,179 @@
+{
+  "canvas": {
+    "title": "ECS Webシステム構成図",
+    "direction": "LR",
+    "font_size": 14,
+    "row_gap": 150,
+    "layer_gap": 120,
+    "col_gap": 48,
+    "uniform_width": false
+  },
+  "nodes": [
+    {
+      "id": "browser",
+      "label": "ブラウザ",
+      "layer": 0,
+      "col": 0,
+      "type": "client"
+    },
+    {
+      "id": "mobile",
+      "label": "スマホアプリ",
+      "layer": 0,
+      "col": 1,
+      "type": "client"
+    },
+    {
+      "id": "cf",
+      "label": "CloudFront",
+      "layer": 1,
+      "col": 0,
+      "type": "service"
+    },
+    {
+      "id": "alb",
+      "label": "ALB",
+      "layer": 2,
+      "col": 0,
+      "type": "service"
+    },
+    {
+      "id": "api",
+      "label": "Web API\n(ECS 2台)",
+      "layer": 3,
+      "col": 0,
+      "type": "service"
+    },
+    {
+      "id": "sqs",
+      "label": "SQS\n注文キュー",
+      "layer": 3,
+      "col": 1,
+      "type": "queue"
+    },
+    {
+      "id": "worker",
+      "label": "注文ワーカー",
+      "layer": 3,
+      "col": 2,
+      "type": "service"
+    },
+    {
+      "id": "aurora",
+      "label": "Aurora\n(PostgreSQL)",
+      "layer": 4,
+      "col": 0,
+      "type": "database"
+    },
+    {
+      "id": "redis",
+      "label": "Redis",
+      "layer": 4,
+      "col": 1,
+      "type": "database"
+    },
+    {
+      "id": "stripe",
+      "label": "決済サービス\n(Stripe)",
+      "layer": 4,
+      "col": 3,
+      "type": "external"
+    }
+  ],
+  "edges": [
+    {
+      "from": "browser",
+      "to": "cf",
+      "label": "HTTPS",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "mobile",
+      "to": "cf",
+      "label": "HTTPS",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "cf",
+      "to": "alb",
+      "label": "HTTPS",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "alb",
+      "to": "api",
+      "label": "HTTP",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "api",
+      "to": "aurora",
+      "label": "SQL",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "api",
+      "to": "redis",
+      "label": "Redis",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "api",
+      "to": "sqs",
+      "label": "注文投入",
+      "style": "dashed",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "sqs",
+      "to": "worker",
+      "label": "取得",
+      "style": "dashed",
+      "arrow": true,
+      "route": "straight"
+    },
+    {
+      "from": "worker",
+      "to": "stripe",
+      "label": "HTTPS",
+      "style": "solid",
+      "arrow": true,
+      "route": "straight"
+    }
+  ],
+  "groups": [
+    {
+      "id": "apptier",
+      "label": "アプリ層",
+      "nodes": [
+        "api",
+        "sqs",
+        "worker"
+      ],
+      "padding": 20
+    },
+    {
+      "id": "datatier",
+      "label": "データ層",
+      "nodes": [
+        "aurora",
+        "redis"
+      ],
+      "padding": 20
+    }
+  ],
+  "lanes": []
+}

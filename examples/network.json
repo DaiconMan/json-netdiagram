@@ -1,0 +1,177 @@
+{
+  "canvas": {
+    "title": "ネットワーク構成図",
+    "direction": "TB",
+    "font_size": 14,
+    "row_gap": 150,
+    "layer_gap": 80,
+    "col_gap": 48,
+    "uniform_width": false
+  },
+  "nodes": [
+    {
+      "id": "internet",
+      "label": "Internet",
+      "layer": 0,
+      "col": 1,
+      "type": "cloud"
+    },
+    {
+      "id": "fw",
+      "label": "FortiGate 200F\n（本社FW）",
+      "layer": 1,
+      "col": 1,
+      "type": "firewall"
+    },
+    {
+      "id": "dmzsw",
+      "label": "DMZ SW",
+      "layer": 2,
+      "col": 0,
+      "type": "switch"
+    },
+    {
+      "id": "coresw",
+      "label": "Core SW\nCatalyst 9300",
+      "layer": 2,
+      "col": 3,
+      "type": "switch"
+    },
+    {
+      "id": "web",
+      "label": "公開Web",
+      "layer": 3,
+      "col": 0,
+      "type": "server"
+    },
+    {
+      "id": "sw1f",
+      "label": "1F フロアSW",
+      "layer": 3,
+      "col": 2,
+      "type": "switch"
+    },
+    {
+      "id": "sw2f",
+      "label": "2F フロアSW",
+      "layer": 3,
+      "col": 3,
+      "type": "switch"
+    },
+    {
+      "id": "srv",
+      "label": "社内サーバ\n（AD/ファイル）",
+      "layer": 3,
+      "col": 4,
+      "type": "server"
+    },
+    {
+      "id": "mr",
+      "label": "Meraki MR",
+      "layer": 4,
+      "col": 2,
+      "type": "ap"
+    },
+    {
+      "id": "pc",
+      "label": "PC",
+      "layer": 4,
+      "col": 3,
+      "type": "user"
+    }
+  ],
+  "edges": [
+    {
+      "from": "internet",
+      "to": "fw",
+      "arrow": false,
+      "style": "solid",
+      "route": "straight"
+    },
+    {
+      "from": "fw",
+      "to": "coresw",
+      "label": "10GbE",
+      "style": "solid",
+      "arrow": false,
+      "route": "straight"
+    },
+    {
+      "from": "fw",
+      "to": "dmzsw",
+      "label": "1GbE",
+      "style": "solid",
+      "arrow": false,
+      "route": "straight"
+    },
+    {
+      "from": "dmzsw",
+      "to": "web",
+      "style": "solid",
+      "arrow": false,
+      "route": "straight"
+    },
+    {
+      "from": "coresw",
+      "to": "sw1f",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "coresw",
+      "to": "sw2f",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "coresw",
+      "to": "srv",
+      "label": "LACP x2",
+      "style": "solid",
+      "arrow": false,
+      "route": "bus"
+    },
+    {
+      "from": "sw1f",
+      "to": "mr",
+      "label": "PoE",
+      "style": "dashed",
+      "arrow": false,
+      "route": "straight"
+    },
+    {
+      "from": "sw2f",
+      "to": "pc",
+      "style": "solid",
+      "arrow": false,
+      "route": "straight"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_dmz",
+      "label": "DMZ",
+      "nodes": [
+        "dmzsw",
+        "web"
+      ],
+      "padding": 20
+    },
+    {
+      "id": "g_lan",
+      "label": "社内LAN",
+      "nodes": [
+        "coresw",
+        "sw1f",
+        "sw2f",
+        "srv",
+        "mr",
+        "pc"
+      ],
+      "padding": 20
+    }
+  ],
+  "lanes": []
+}

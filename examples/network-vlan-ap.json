@@ -1,0 +1,335 @@
+{
+  "edges": [
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap1",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap2",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap3",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap4",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap5",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap6",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap7",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap8",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap9",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap10",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap11",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap12",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap13",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap14",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap15",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap16",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap17",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap18",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap19",
+      "route": "bus",
+      "style": "solid"
+    },
+    {
+      "arrow": false,
+      "from": "c9300",
+      "to": "ap20",
+      "route": "bus",
+      "style": "solid"
+    }
+  ],
+  "groups": [
+    {
+      "id": "v100",
+      "label": "VLAN100（奇数AP）",
+      "padding": 12,
+      "nodes": [
+        "ap1",
+        "ap3",
+        "ap5",
+        "ap7",
+        "ap9",
+        "ap11",
+        "ap13",
+        "ap15",
+        "ap17",
+        "ap19"
+      ]
+    },
+    {
+      "id": "v200",
+      "label": "VLAN200（偶数AP）",
+      "padding": 12,
+      "nodes": [
+        "ap2",
+        "ap4",
+        "ap6",
+        "ap8",
+        "ap10",
+        "ap12",
+        "ap14",
+        "ap16",
+        "ap18",
+        "ap20"
+      ]
+    }
+  ],
+  "canvas": {
+    "title": "C9300 配下の AP 20 台（奇数=VLAN100 / 偶数=VLAN200）",
+    "font_size": 14,
+    "col_gap": 16,
+    "row_gap": 150
+  },
+  "nodes": [
+    {
+      "id": "c9300",
+      "label": "Catalyst 9300\n48P PoE+",
+      "layer": 0,
+      "type": "switch",
+      "col": 5
+    },
+    {
+      "id": "ap1",
+      "label": "AP01",
+      "layer": 1,
+      "type": "ap",
+      "col": 0
+    },
+    {
+      "id": "ap2",
+      "label": "AP02",
+      "layer": 2,
+      "type": "ap",
+      "col": 0
+    },
+    {
+      "id": "ap3",
+      "label": "AP03",
+      "layer": 1,
+      "type": "ap",
+      "col": 1
+    },
+    {
+      "id": "ap4",
+      "label": "AP04",
+      "layer": 2,
+      "type": "ap",
+      "col": 1
+    },
+    {
+      "id": "ap5",
+      "label": "AP05",
+      "layer": 1,
+      "type": "ap",
+      "col": 2
+    },
+    {
+      "id": "ap6",
+      "label": "AP06",
+      "layer": 2,
+      "type": "ap",
+      "col": 2
+    },
+    {
+      "id": "ap7",
+      "label": "AP07",
+      "layer": 1,
+      "type": "ap",
+      "col": 3
+    },
+    {
+      "id": "ap8",
+      "label": "AP08",
+      "layer": 2,
+      "type": "ap",
+      "col": 3
+    },
+    {
+      "id": "ap9",
+      "label": "AP09",
+      "layer": 1,
+      "type": "ap",
+      "col": 4
+    },
+    {
+      "id": "ap10",
+      "label": "AP10",
+      "layer": 2,
+      "type": "ap",
+      "col": 4
+    },
+    {
+      "id": "ap11",
+      "label": "AP11",
+      "layer": 1,
+      "type": "ap",
+      "col": 6
+    },
+    {
+      "id": "ap12",
+      "label": "AP12",
+      "layer": 2,
+      "type": "ap",
+      "col": 6
+    },
+    {
+      "id": "ap13",
+      "label": "AP13",
+      "layer": 1,
+      "type": "ap",
+      "col": 7
+    },
+    {
+      "id": "ap14",
+      "label": "AP14",
+      "layer": 2,
+      "type": "ap",
+      "col": 7
+    },
+    {
+      "id": "ap15",
+      "label": "AP15",
+      "layer": 1,
+      "type": "ap",
+      "col": 8
+    },
+    {
+      "id": "ap16",
+      "label": "AP16",
+      "layer": 2,
+      "type": "ap",
+      "col": 8
+    },
+    {
+      "id": "ap17",
+      "label": "AP17",
+      "layer": 1,
+      "type": "ap",
+      "col": 9
+    },
+    {
+      "id": "ap18",
+      "label": "AP18",
+      "layer": 2,
+      "type": "ap",
+      "col": 9
+    },
+    {
+      "id": "ap19",
+      "label": "AP19",
+      "layer": 1,
+      "type": "ap",
+      "col": 10
+    },
+    {
+      "id": "ap20",
+      "label": "AP20",
+      "layer": 2,
+      "type": "ap",
+      "col": 10
+    }
+  ]
+}

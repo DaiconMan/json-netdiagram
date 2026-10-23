@@ -1,0 +1,177 @@
+{
+  "canvas": {
+    "title": "経費精算フロー",
+    "direction": "LR",
+    "font_size": 14,
+    "row_gap": 150,
+    "layer_gap": 80,
+    "col_gap": 48,
+    "uniform_width": false
+  },
+  "nodes": [
+    {
+      "id": "start",
+      "label": "開始",
+      "layer": 0,
+      "col": 0,
+      "type": "start"
+    },
+    {
+      "id": "apply",
+      "label": "経費を申請",
+      "layer": 1,
+      "col": 0,
+      "type": "process"
+    },
+    {
+      "id": "check",
+      "label": "内容を確認",
+      "layer": 2,
+      "col": 1,
+      "type": "process"
+    },
+    {
+      "id": "decide",
+      "label": "承認するか？",
+      "layer": 3,
+      "col": 1,
+      "type": "decision"
+    },
+    {
+      "id": "reject",
+      "label": "差し戻し",
+      "layer": 4,
+      "col": 0,
+      "type": "process"
+    },
+    {
+      "id": "resubmit",
+      "label": "修正して\n再申請",
+      "layer": 5,
+      "col": 0,
+      "type": "process"
+    },
+    {
+      "id": "register",
+      "label": "精算システムに\n登録",
+      "layer": 4,
+      "col": 2,
+      "type": "data"
+    },
+    {
+      "id": "transfer",
+      "label": "振込する",
+      "layer": 5,
+      "col": 2,
+      "type": "process"
+    },
+    {
+      "id": "end",
+      "label": "終了",
+      "layer": 6,
+      "col": 2,
+      "type": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "apply",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "apply",
+      "to": "check",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "check",
+      "to": "decide",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "decide",
+      "to": "register",
+      "label": "はい",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus",
+      "label_pos": 0.5
+    },
+    {
+      "from": "decide",
+      "to": "reject",
+      "label": "いいえ",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus",
+      "label_pos": 0.5
+    },
+    {
+      "from": "reject",
+      "to": "resubmit",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "resubmit",
+      "to": "check",
+      "label": "再申請",
+      "style": "solid",
+      "arrow": true,
+      "route": "loop",
+      "label_pos": 0.5
+    },
+    {
+      "from": "register",
+      "to": "transfer",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    },
+    {
+      "from": "transfer",
+      "to": "end",
+      "style": "solid",
+      "arrow": true,
+      "route": "bus"
+    }
+  ],
+  "groups": [],
+  "lanes": [
+    {
+      "id": "applicant",
+      "label": "申請者",
+      "nodes": [
+        "start",
+        "apply",
+        "reject",
+        "resubmit"
+      ]
+    },
+    {
+      "id": "manager",
+      "label": "上長",
+      "nodes": [
+        "check",
+        "decide"
+      ]
+    },
+    {
+      "id": "accounting",
+      "label": "経理",
+      "nodes": [
+        "register",
+        "transfer",
+        "end"
+      ]
+    }
+  ]
+}
