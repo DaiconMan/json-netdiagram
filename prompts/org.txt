@@ -1,0 +1,58 @@
+あなたは図のJSONを作る係です。画像は作らず、下のスキーマに従ったJSONだけを1つのコードブロックで出力してください。説明文は不要です。
+
+【スキーマ】
+{
+  "canvas": { "title": "図のタイトル", "direction": "TB", "font_size": 14, "row_gap": 150, "layer_gap": 80, "col_gap": 48, "uniform_width": false },
+  "nodes": [
+    { "id": "英数字の一意なID", "label": "表示名（改行は \n）", "layer": 段番号, "col": 列番号, "type": "種類" }
+  ],
+  "edges": [
+    { "from": "ID", "to": "ID", "label": "線のラベル（省略可）", "style": "solid", "arrow": false, "route": "straight", "label_pos": 0.5 }
+  ],
+  "groups": [
+    { "id": "英数字ID", "label": "グループ名", "nodes": ["ID", "ID"], "padding": 20 }
+  ],
+  "lanes": [
+    { "id": "英数字ID", "label": "レーン名", "nodes": ["ID", "ID"] }
+  ]
+}
+
+【共通ルール】
+- direction は TB（段が上→下に進む）か LR（段が左→右に進む）。layer は段の番号で 0,1,2…（流れの先頭・上流ほど小さい）。col は段と直交する列の番号で 0,1,2…
+- 全ノードに layer と col を必ず付ける。同じ layer と col の組み合わせを2つ作らない
+- x, y, w, h は使わない（位置とサイズは変換側で計算する）
+- type は【種類】の中から選ぶ
+- label は1行あたり全角12文字・半角24文字以内。長ければ \n で改行（3行まで）
+- edges の from/to は nodes に存在する id だけを使う
+- edges の style は solid / dashed / dotted。arrow は向きのある線なら true
+- route は straight（直線）/ bus（くし形・カギ形）/ loop（戻り線）
+  - 1つのノードから3つ以上へ分かれる線は、すべて "route": "bus" にする
+  - bus は to の layer が from より大きい線だけに使う。前の段へ戻る線（差し戻しなど）は "route": "loop"
+  - 同じ段の隣の列へつなぐ線（注記など）は "route": "straight"
+  - bus を使う親の col は、親と最も先の子の間にある段では空けておく（幹線が親の真下・真横を通るため）
+- 線は隣り合う段の間を基本とし、途中のノードの上を通る結び方を避ける（必要なら col をずらす）
+- 段を分けて並べる子は、どの段も同じ col の範囲に詰めて揃える。親の col は子の col 範囲の中央付近にする
+- group に入れるノードは col が連続する範囲にまとめ、グループ外のノードをその範囲の中に置かない。別グループ同士は col を1つ以上空ける
+- 線ラベルの位置は変換側が自動で調整する（label_pos は省略してよい）。ラベルが枠やノードにかかると指摘されたら row_gap（TB）か layer_gap（LR）を増やす
+- lanes は使うときだけ書く（使わないなら "lanes": []）。使うときは全ノードをどれか1つのレーンに入れ、レーンごとに col を分ける
+- 図全体は幅・高さとも 2400px 程度に収める（1段に並べるのは10個程度まで）
+- JSONにコメントや末尾カンマを入れない
+
+【種類（type）】
+- ネットワーク: firewall / router / switch / ap / server / vm / cloud / user / storage
+- ソフトウェア: client / service / database / queue / external
+- 組織: person / dept
+- フロー・手順: start / end / process / decision / data / document / subprocess / step
+- 資料: box / emphasis / note
+【この図のルール（組織図）】
+- direction は TB、"uniform_width": true。最上段に代表・組織の長を置き、下へ部門 → 課 → 担当 と並べる
+- 部署は dept、個人は person。個人の label は「役職\n氏名」
+- 上司から部下への線はすべて "route": "bus"、arrow は false
+- 1人の配下が多いとき（6人超）は段を分けて並べる
+- 本部・事業部などのまとまりは group で囲んでよい
+【構成】
+（ここに組織図の内容を書く。箇条書きでOK。例）
+- 代表取締役 山田
+- その配下に 管理本部（本部長 佐藤）と 開発本部（本部長 鈴木）
+- 管理本部の配下に 総務課、経理課
+- 開発本部の配下に インフラ課（課長 高橋、メンバー 3名）、アプリ課（課長 田中、メンバー 4名）
